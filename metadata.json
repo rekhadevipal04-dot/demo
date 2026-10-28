@@ -1,0 +1,6 @@
+{
+  "name": "Vikas Chinese Adda | Pure Veg Indo-Chinese Restaurant",
+  "description": "Official website for Vikas Chinese Adda (Pure Veg) in Thane West. Authentic Indo-Chinese flavors, interactive menu with half & full options, secure order booking with email confirmation, customer reviews, and live location.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
