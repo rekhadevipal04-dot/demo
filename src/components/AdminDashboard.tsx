@@ -18,7 +18,8 @@ import {
   Printer, 
   RefreshCw,
   Bell,
-  Trash2
+  Trash2,
+  LogOut
 } from 'lucide-react';
 import { OrderBooking, OrderStatus, MenuItem, Portion, CartItem } from '../types/restaurant';
 import { MENU_ITEMS, RESTAURANT_INFO } from '../data/menuData';
@@ -29,6 +30,7 @@ interface AdminDashboardProps {
   onAddNewOrder: (newOrder: OrderBooking) => void;
   onClearAllOrders: () => void;
   onClose: () => void;
+  onLogout?: () => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -37,6 +39,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onAddNewOrder,
   onClearAllOrders,
   onClose,
+  onLogout,
 }) => {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
@@ -238,7 +241,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               title="Clear all stored orders"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Clear Orders</span>
+              <span className="hidden md:inline">Clear</span>
             </button>
           )}
 
@@ -249,6 +252,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <Plus className="w-4 h-4" />
             <span>+ Order</span>
           </button>
+
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg bg-stone-800 hover:bg-stone-750 text-stone-400 hover:text-amber-400 text-xs font-medium border border-stone-700 transition-colors flex items-center gap-1 shrink-0"
+              title="Logout & Lock Admin"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          )}
         </div>
       </header>
 

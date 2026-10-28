@@ -19,6 +19,7 @@ import { CheckoutModal } from './components/CheckoutModal';
 import { OrderConfirmationModal } from './components/OrderConfirmationModal';
 import { MobileQuickBar } from './components/MobileQuickBar';
 import { AdminDashboard } from './components/AdminDashboard';
+import { AdminLoginModal } from './components/AdminLoginModal';
 import { INITIAL_ORDERS } from './data/initialOrders';
 
 export default function App() {
@@ -64,6 +65,10 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isAdminAuthModalOpen, setIsAdminAuthModalOpen] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(() => {
+    return sessionStorage.getItem('vca_admin_authenticated') === 'true';
+  });
   const [confirmedOrder, setConfirmedOrder] = useState<OrderBooking | null>(null);
 
   // Sync dark mode to document element
@@ -193,6 +198,28 @@ export default function App() {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Open Admin with password challenge
+  const handleOpenAdmin = () => {
+    if (isAdminAuthenticated) {
+      setIsAdminOpen(true);
+    } else {
+      setIsAdminAuthModalOpen(true);
+    }
+  };
+
+  const handleAdminAuthSuccess = () => {
+    setIsAdminAuthenticated(true);
+    sessionStorage.setItem('vca_admin_authenticated', 'true');
+    setIsAdminAuthModalOpen(false);
+    setIsAdminOpen(true);
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminAuthenticated(false);
+    sessionStorage.removeItem('vca_admin_authenticated');
+    setIsAdminOpen(false);
+  };
+
   // If Admin panel is open, render Admin view
   if (isAdminOpen) {
     return (
@@ -202,6 +229,7 @@ export default function App() {
         onAddNewOrder={handleAddNewManualOrder}
         onClearAllOrders={handleClearAllOrders}
         onClose={() => setIsAdminOpen(false)}
+        onLogout={handleAdminLogout}
       />
     );
   }
@@ -214,7 +242,7 @@ export default function App() {
         onToggleDarkMode={toggleDarkMode}
         cartCount={cartCount}
         onOpenCart={() => setIsCartOpen(true)}
-        onOpenAdmin={() => setIsAdminOpen(true)}
+        onOpenAdmin={handleOpenAdmin}
         newOrdersCount={newOrdersCount}
       />
 
@@ -223,7 +251,7 @@ export default function App() {
         {/* Hero Section */}
         <Hero
           onExploreMenu={scrollToMenu}
-          onOpenAdmin={() => setIsAdminOpen(true)}
+          onOpenAdmin={handleOpenAdmin}
         />
 
         {/* Live Chinese Wok & Dish Showcase with Real Photos */}
@@ -255,7 +283,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <Footer onOpenAdmin={() => setIsAdminOpen(true)} />
+      <Footer onOpenAdmin={handleOpenAdmin} />
 
       {/* Mobile Sticky Quick Bar */}
       <MobileQuickBar
@@ -287,6 +315,13 @@ export default function App() {
       <OrderConfirmationModal
         order={confirmedOrder}
         onClose={() => setConfirmedOrder(null)}
+      />
+
+      {/* Admin Password Authentication Modal */}
+      <AdminLoginModal
+        isOpen={isAdminAuthModalOpen}
+        onSuccess={handleAdminAuthSuccess}
+        onClose={() => setIsAdminAuthModalOpen(false)}
       />
     </div>
   );
