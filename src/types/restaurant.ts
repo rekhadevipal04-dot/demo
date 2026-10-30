@@ -41,6 +41,8 @@ export interface OrderBooking {
   items: CartItem[];
   subtotal: number;
   deliveryFee: number;
+  discount?: number;
+  couponCode?: string;
   total: number;
   status: OrderStatus;
   timestamp: string;

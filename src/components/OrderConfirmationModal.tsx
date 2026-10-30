@@ -6,9 +6,14 @@ import { RESTAURANT_INFO } from '../data/menuData';
 interface OrderConfirmationModalProps {
   order: OrderBooking | null;
   onClose: () => void;
+  onOpenOrderHistory?: () => void;
 }
 
-export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({ order, onClose }) => {
+export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({ 
+  order, 
+  onClose,
+  onOpenOrderHistory,
+}) => {
   const [activeTab, setActiveTab] = useState<'status' | 'email'>('status');
   const [emailResent, setEmailResent] = useState(false);
 
@@ -27,6 +32,7 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({ 
     `*Type:* ${order.orderType.toUpperCase()}\n` +
     (order.deliveryAddress ? `*Address:* ${order.deliveryAddress}\n` : '') +
     `\n*ITEMS:*\n${itemsText}\n\n` +
+    (order.discount && order.discount > 0 ? `*Coupon Discount (${order.couponCode || 'PROMO'}):* -₹${order.discount}\n` : '') +
     `*Total Amount:* ₹${order.total}\n` +
     `*Payment Mode:* CASH ON DELIVERY (COD)\n` +
     (order.notes ? `*Special Notes:* ${order.notes}\n` : '') +
@@ -148,6 +154,12 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({ 
                       </div>
                     </div>
                   ))}
+                  {order.discount && order.discount > 0 && (
+                    <div className="p-3 bg-emerald-50/60 dark:bg-emerald-950/30 flex justify-between items-center text-xs text-emerald-700 dark:text-emerald-400 font-semibold border-b border-stone-200 dark:border-stone-800">
+                      <span>Coupon Discount ({order.couponCode || 'PROMO'})</span>
+                      <span className="font-mono font-bold">-₹{order.discount}</span>
+                    </div>
+                  )}
                   <div className="p-3 bg-stone-100 dark:bg-stone-800 flex justify-between items-center font-bold text-sm">
                     <span>Total Amount (Cash on Delivery)</span>
                     <span className="font-mono text-red-600 dark:text-amber-400">₹{order.total}</span>
@@ -175,6 +187,21 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({ 
                   <span>Send Order Copy Directly to Vikas Chinese WhatsApp</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
+
+                {/* Direct Order Tracking Button */}
+                {onOpenOrderHistory && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onOpenOrderHistory();
+                    }}
+                    className="w-full py-2.5 px-4 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-750 text-stone-800 dark:text-stone-200 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors border border-stone-200 dark:border-stone-700"
+                  >
+                    <Clock className="w-3.5 h-3.5 text-amber-500" />
+                    <span>View All My Past Orders & Live Status</span>
+                  </button>
+                )}
               </div>
 
             </div>
@@ -230,6 +257,12 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({ 
                         </li>
                       ))}
                     </ul>
+                    {order.discount && order.discount > 0 && (
+                      <div className="flex justify-between text-xs text-emerald-700 font-semibold pt-1 border-t border-stone-200">
+                        <span>Coupon ({order.couponCode || 'PROMO'}):</span>
+                        <span className="font-mono font-bold">-₹{order.discount}</span>
+                      </div>
+                    )}
                     <div className="pt-2 border-t border-stone-200 flex justify-between font-bold text-stone-900">
                       <span>Total (incl. delivery):</span>
                       <span className="font-mono text-red-700">₹{order.total}</span>

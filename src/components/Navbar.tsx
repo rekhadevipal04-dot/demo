@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Sun, Moon, Phone, Menu, X, ShieldAlert } from 'lucide-react';
+import { ShoppingBag, Sun, Moon, Phone, Menu, X, ShieldAlert, Clock } from 'lucide-react';
 import { ChefLogo } from './ChefLogo';
 import { RESTAURANT_INFO } from '../data/menuData';
 
@@ -9,6 +9,7 @@ interface NavbarProps {
   cartCount: number;
   onOpenCart: () => void;
   onOpenAdmin: () => void;
+  onOpenOrderHistory: () => void;
   newOrdersCount?: number;
 }
 
@@ -18,6 +19,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   cartCount,
   onOpenCart,
   onOpenAdmin,
+  onOpenOrderHistory,
   newOrdersCount = 0,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -80,8 +82,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </nav>
 
-        {/* Zone 3: Actions (Call, Dark Mode & Cart CTA) */}
+        {/* Zone 3: Actions (Track, Call, Dark Mode & Cart CTA) */}
         <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          {/* Order History / Live Tracking Trigger */}
+          <button
+            onClick={onOpenOrderHistory}
+            className="flex items-center gap-1.5 text-xs text-stone-300 hover:text-amber-400 hover:border-amber-400/60 transition-colors px-2 sm:px-2.5 py-1.5 rounded-lg border border-stone-800 shrink-0 font-medium"
+            title="Track past orders & view status"
+          >
+            <Clock className="w-3.5 h-3.5 text-amber-400" />
+            <span className="hidden sm:inline">Track Orders</span>
+            <span className="sm:hidden text-[11px]">Track</span>
+          </button>
+
           <a
             href={`tel:${RESTAURANT_INFO.phone}`}
             className="hidden xl:flex items-center gap-1.5 text-xs text-stone-300 hover:text-amber-400 transition-colors px-2.5 py-1.5 rounded-lg border border-stone-800 shrink-0"
@@ -142,11 +155,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
+                onOpenOrderHistory();
+              }}
+              className="flex items-center gap-2 text-xs text-amber-400 py-1.5 font-semibold"
+            >
+              <Clock className="w-4 h-4" />
+              <span>Track Orders & History</span>
+            </button>
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
                 onOpenAdmin();
               }}
-              className="flex items-center gap-2 text-xs text-amber-400 py-2 font-semibold"
+              className="flex items-center gap-2 text-xs text-stone-300 hover:text-white py-1.5 font-semibold"
             >
-              <ShieldAlert className="w-4 h-4" />
+              <ShieldAlert className="w-4 h-4 text-amber-400" />
               <span>Admin Panel</span>
             </button>
             <a

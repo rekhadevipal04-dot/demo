@@ -20,6 +20,7 @@ import { OrderConfirmationModal } from './components/OrderConfirmationModal';
 import { MobileQuickBar } from './components/MobileQuickBar';
 import { AdminDashboard } from './components/AdminDashboard';
 import { AdminLoginModal } from './components/AdminLoginModal';
+import { OrderHistoryModal } from './components/OrderHistoryModal';
 import { INITIAL_ORDERS } from './data/initialOrders';
 
 export default function App() {
@@ -70,6 +71,7 @@ export default function App() {
     return sessionStorage.getItem('vca_admin_authenticated') === 'true';
   });
   const [confirmedOrder, setConfirmedOrder] = useState<OrderBooking | null>(null);
+  const [isOrderHistoryOpen, setIsOrderHistoryOpen] = useState(false);
 
   // Sync dark mode to document element
   useEffect(() => {
@@ -160,6 +162,26 @@ export default function App() {
     setCartItems([]); // Clear cart after successful booking
   };
 
+  // Reorder dishes from past orders directly into cart
+  const handleReorder = (itemsToReorder: CartItem[]) => {
+    setCartItems(prev => {
+      const updated = [...prev];
+      itemsToReorder.forEach(newItem => {
+        const existingIndex = updated.findIndex(ci => ci.id === newItem.id);
+        if (existingIndex > -1) {
+          updated[existingIndex] = {
+            ...updated[existingIndex],
+            quantity: updated[existingIndex].quantity + newItem.quantity,
+          };
+        } else {
+          updated.push({ ...newItem });
+        }
+      });
+      return updated;
+    });
+    setIsCartOpen(true);
+  };
+
   // Admin updates order status
   const handleUpdateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
     setOrders(prev =>
@@ -243,6 +265,7 @@ export default function App() {
         cartCount={cartCount}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenAdmin={handleOpenAdmin}
+        onOpenOrderHistory={() => setIsOrderHistoryOpen(true)}
         newOrdersCount={newOrdersCount}
       />
 
@@ -290,6 +313,7 @@ export default function App() {
         cartCount={cartCount}
         cartTotal={cartTotal}
         onOpenCart={() => setIsCartOpen(true)}
+        onOpenOrderHistory={() => setIsOrderHistoryOpen(true)}
       />
 
       {/* Slide-over Cart Drawer */}
@@ -315,6 +339,16 @@ export default function App() {
       <OrderConfirmationModal
         order={confirmedOrder}
         onClose={() => setConfirmedOrder(null)}
+        onOpenOrderHistory={() => setIsOrderHistoryOpen(true)}
+      />
+
+      {/* Customer Order History & Live Status Modal */}
+      <OrderHistoryModal
+        isOpen={isOrderHistoryOpen}
+        onClose={() => setIsOrderHistoryOpen(false)}
+        allOrders={orders}
+        onReorder={handleReorder}
+        onExploreMenu={scrollToMenu}
       />
 
       {/* Admin Password Authentication Modal */}

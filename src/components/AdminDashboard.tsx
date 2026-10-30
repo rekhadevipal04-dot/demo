@@ -19,7 +19,8 @@ import {
   RefreshCw,
   Bell,
   Trash2,
-  LogOut
+  LogOut,
+  Tag
 } from 'lucide-react';
 import { OrderBooking, OrderStatus, MenuItem, Portion, CartItem } from '../types/restaurant';
 import { MENU_ITEMS, RESTAURANT_INFO } from '../data/menuData';
@@ -466,9 +467,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <span className="font-mono text-sm sm:text-base font-extrabold text-white block">
                           ₹{order.total}
                         </span>
-                        <span className="text-[10px] text-stone-400 uppercase">
+                        <span className="text-[10px] text-stone-400 uppercase block">
                           {order.paymentMethod}
                         </span>
+                        {order.couponCode && (
+                          <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-1 rounded mt-0.5">
+                            <Tag className="w-2.5 h-2.5" />
+                            {order.couponCode}
+                          </span>
+                        )}
                       </div>
                     </div>
 
@@ -644,6 +651,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       </div>
                     </div>
                   ))}
+                  {selectedOrder.discount && selectedOrder.discount > 0 && (
+                    <div className="p-2.5 bg-emerald-950/30 flex justify-between items-center text-xs text-emerald-400 font-semibold border-t border-stone-800">
+                      <span className="flex items-center gap-1.5">
+                        <Tag className="w-3 h-3 text-emerald-400" />
+                        <span>Coupon Discount ({selectedOrder.couponCode || 'PROMO'})</span>
+                      </span>
+                      <span className="font-mono font-bold">-₹{selectedOrder.discount}</span>
+                    </div>
+                  )}
                   <div className="p-2.5 bg-stone-950 flex justify-between font-bold text-sm">
                     <span>Total ({selectedOrder.paymentMethod.toUpperCase()})</span>
                     <span className="font-mono text-amber-400">₹{selectedOrder.total}</span>
